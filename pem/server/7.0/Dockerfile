@@ -1,5 +1,5 @@
 FROM epas10:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG EDBUSERNAME
 ARG EDBPASSWORD

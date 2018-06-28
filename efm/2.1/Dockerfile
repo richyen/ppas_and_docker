@@ -1,5 +1,5 @@
 FROM epas95:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
@@ -7,13 +7,13 @@ ARG YUMPASSWORD
 ENV PGMAJOR=9.5
 ENV INSTALLDIR=/usr/efm-2.1
 
-RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-9.6-3.noarch.rpm
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 # run update and install require packages.
-RUN yum --enablerepo=enterprisedb-tools install -y which efm21 java-1.7.0-openjdk
-RUN yum update -y
-RUN yum install vim -y
+RUN yum -y install yum-plugin-ovl
+RUN yum -y update
+RUN yum -y --enablerepo=enterprisedb-tools install which efm21 java-1.7.0-openjdk vim
 
 RUN mkdir -p /opt/backup
 RUN mkdir -p /var/lib/ppas/${PGMAJOR}/wal_archive

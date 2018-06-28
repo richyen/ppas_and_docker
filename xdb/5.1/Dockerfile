@@ -1,5 +1,5 @@
 FROM ppas95:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
@@ -9,11 +9,11 @@ ENV INSTALLDIR=/usr/ppas-xdb-${XDB_VERSION}
 ENV JAVA_VERSION=1.7
 
 # install required packages.
-RUN rpm -ivh http://yum.enterprisedb.com/reporpms/enterprisedb-tools-repo-1.0-1.noarch.rpm
-RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/enterprisedb-tools.repo
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 # install required packages.
-RUN yum -y install ppas-xdb ppas-xdb-console ppas-xdb-libs ppas-xdb-publisher which java-${JAVA_VERSION}.0-openjdk-devel
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=enterprisedb-tools install ppas-xdb ppas-xdb-console ppas-xdb-libs ppas-xdb-publisher which java-${JAVA_VERSION}.0-openjdk-devel
 
 # set up xDB
 COPY edb-repl.conf /etc/edb-repl.conf

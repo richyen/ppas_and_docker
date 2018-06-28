@@ -1,14 +1,14 @@
 FROM ppas95:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
 
-RUN rpm -ivh http://yum.enterprisedb.com/reporpms/enterprisedb-tools-repo-1.0-1.noarch.rpm
-RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/enterprisedb-tools.repo
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 # run update and install require packages.
-RUN yum -y install which ppas95-server-sslutils openssl-devel pem-agent
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=enterprisedb-tools --enablerepo=ppas95 install which ppas95-server-sslutils openssl-devel pem-agent
 
 RUN cp /usr/pem-6.0/etc/agent.cfg.sample /usr/pem-6.0/etc/agent.cfg
 RUN sed -i "s/pem_host=.*/pem_host=%%PEM_SERVER_IP%%/" /usr/pem-6.0/etc/agent.cfg

@@ -1,5 +1,5 @@
 FROM ppas95:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
@@ -7,9 +7,8 @@ ARG YUMPASSWORD
 ENV BART_VERSION=2.1
 ENV BART_PATH="/usr/edb/bart"
 
-RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
-RUN sed -i "s/enabled.*/enabled=1/" /etc/yum.repos.d/edb.repo
 
 # run update and install require packages.
 RUN yum -y install yum-plugin-ovl

@@ -1,5 +1,5 @@
 FROM ppas95:latest
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG INSTALLER_FILENAME
 ARG EDBUSERNAME
