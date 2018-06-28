@@ -1,11 +1,12 @@
 FROM gisjedi/gosu-centos
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD 
 
+ENV REPONAME=edbas96
 ENV PGMAJOR=9.6
-ENV SHORTVER=96
+ENV PGNODOT=96
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
@@ -13,11 +14,12 @@ ENV PATH=/usr/edb/as${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
 ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
 
-RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-9.6-4.noarch.rpm
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 RUN yum -y update
-RUN yum -y --enablerepo=edbas${SHORTVER} --enablerepo=enterprisedb-dependencies install edb-as${SHORTVER}-server.x86_64 sudo vim file net-tools
+RUN yum -y install yum-plugin-ovl
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGNODOT}-server.x86_64 sudo vim file net-tools
 
 RUN echo 'root:root'|chpasswd
 

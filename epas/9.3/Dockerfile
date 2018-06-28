@@ -1,5 +1,5 @@
 FROM centos:6.6
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
@@ -13,14 +13,12 @@ ENV PATH=/usr/ppas-${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/ppas/${PGMAJOR}/data
 ENV PGLOG=/var/lib/ppas/${PGMAJOR}/pgstartup.log
 
-RUN echo "[${REPONAME}]" >> /etc/yum.repos.d/${REPONAME}.repo
-RUN echo "name=PPAS" >> /etc/yum.repos.d/${REPONAME}.repo
-RUN echo "baseurl=http://${YUMUSERNAME}:${YUMPASSWORD}@yum.enterprisedb.com/${PGMAJOR}/redhat/rhel-\$releasever-\$basearch" >> /etc/yum.repos.d/${REPONAME}.repo
-RUN echo "enabled=1" >> /etc/yum.repos.d/${REPONAME}.repo
-RUN echo "gpgcheck=0" >> /etc/yum.repos.d/${REPONAME}.repo
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 RUN yum -y update
-RUN yum -y install ${REPONAME}-server.x86_64 sudo
+RUN yum -y install yum-plugin-ovl
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install ${REPONAME}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
 

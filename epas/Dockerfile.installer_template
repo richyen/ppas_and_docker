@@ -1,5 +1,5 @@
 FROM centos:6.6
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG INSTALLER_FILENAME
 ARG EDBUSERNAME
@@ -14,6 +14,7 @@ ENV PGDATA=/var/lib/ppas/${PGMAJOR}/data
 ENV PGLOG=/var/lib/ppas/${PGMAJOR}/pgstartup.log
 
 RUN yum -y update
+RUN yum -y install yum-plugin-ovl
 
 COPY ${INSTALLER_FILENAME} /tmp/${INSTALLER_FILENAME}
 RUN chmod 755 /tmp/${INSTALLER_FILENAME}

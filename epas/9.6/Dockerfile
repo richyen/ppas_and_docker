@@ -1,12 +1,12 @@
 FROM centos:6.6
 
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 ARG YUMUSERNAME
 ARG YUMPASSWORD
 
 ENV REPONAME=edbas96
-ENV FOO=96
 ENV PGMAJOR=9.6
+ENV PGNODOT=96
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
@@ -14,12 +14,12 @@ ENV PATH=/usr/edb-as${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
 ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
 
-RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${FOO}-server.x86_64 sudo
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGNODOT}-server.x86_64 sudo vim file net-tools
 
 RUN echo 'root:root'|chpasswd
 

@@ -1,5 +1,5 @@
 FROM gisjedi/gosu-centos
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD 
@@ -13,11 +13,12 @@ ENV PATH=/usr/ppas-${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/ppas/${PGMAJOR}/data
 ENV PGLOG=/var/lib/ppas/${PGMAJOR}/pgstartup.log
 
-RUN rpm -ivh http://yum.enterprisedb.com/reporpms/${REPONAME}-repo-${PGMAJOR}-1.noarch.rpm
-RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/${REPONAME}.repo
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 RUN yum -y update
-RUN yum -y install ${REPONAME}-server.x86_64 sudo
+RUN yum -y install yum-plugin-ovl
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install ${REPONAME}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
 

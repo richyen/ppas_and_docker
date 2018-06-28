@@ -1,5 +1,5 @@
 FROM centos:6.6
-MAINTAINER vibhor.aim@gmail.com
+MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
@@ -13,10 +13,11 @@ ENV PATH=/usr/edb-as${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
 ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
 
-RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 RUN yum -y update
+RUN yum -y install yum-plugin-ovl
 RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGMAJOR}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
