@@ -9,7 +9,7 @@ ENV PGMAJOR=%%PGMAJOR%%
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
-ENV PATH=/usr/edb-as${PGMAJOR}/bin:${PATH}
+ENV PATH=/usr/edb/as${PGMAJOR}/bin:${PATH}
 ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
 ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
 

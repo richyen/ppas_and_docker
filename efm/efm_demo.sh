@@ -1,7 +1,9 @@
 #!/bin/bash
 
-VER='2.1'
+VER='3.1'
 IMAGE_NAME="efm:${VER}"
+# INSTALLDIR="/usr/efm-${VER}"
+INSTALLDIR="/usr/edb/efm-${VER}"
 
 if [[ ${1} == 'destroy' ]]
 then
@@ -38,12 +40,13 @@ done
 
 # Set up master
 printf "\e[0;32m>>> SETTING UP MASTER DATABASE\n\e[0m"
-docker exec -it efm-master bash --login -c "/usr/efm-${VER}/bin/set_as_master.sh"
+docker exec -it efm-master bash --login -c "${INSTALLDIR}/bin/set_as_master.sh"
 
 # Register standby
 printf "\e[0;32m>>> REGISTERING STANDBY INTO EFM\n\e[0m"
 STANDBY_IP=`docker exec -it efm-standby ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
-docker exec -t efm-master /usr/efm-${VER}/bin/efm add-node efm ${STANDBY_IP} 1
+# docker exec -t efm-master ${INSTALLDIR}/bin/efm add-node efm ${STANDBY_IP} 1
+docker exec -t efm-master ${INSTALLDIR}/bin/efm allow-node efm ${STANDBY_IP}
 
 # Set up standby
 printf "\e[0;32m>>> SETTING UP STREAMING REPLICATION\n\e[0m"
@@ -51,10 +54,11 @@ MASTER_IP=`docker exec -it efm-master ifconfig | grep Bcast | awk '{ print $2 }'
 if [[ $VER == "2.1" ]]
 then
   docker exec -t efm-standby bash --login -c "echo ${MASTER_IP}:5430 ${STANDBY_IP}:5430 >> /etc/efm-${VER}/efm.nodes"
-else
+elif [[ $VER == "2.0" ]]
+then
   docker exec -t efm-standby bash --login -c "echo ${MASTER_IP}:5430 >> /etc/efm-${VER}/efm.nodes"
 fi
-docker exec -t efm-standby bash --login -c "/usr/efm-${VER}/bin/set_as_standby.sh ${MASTER_IP}"
+docker exec -t efm-standby bash --login -c "${INSTALLDIR}/bin/set_as_standby.sh ${MASTER_IP}"
 
 # Verify replication is working
 printf "\e[0;33m==== Verifying Streaming Replication Functionality ====\n\e[0m"
@@ -68,12 +72,16 @@ docker exec -t efm-standby bash --login -c "psql -ac 'SELECT * FROM efm_test' ed
 # Register witness
 printf "\e[0;32m>>> REGISTERING WITNESS INTO EFM\n\e[0m"
 WITNESS_IP=`docker exec -it efm-witness ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
-docker exec -t efm-master /usr/efm-${VER}/bin/efm add-node efm ${WITNESS_IP} 1
+# docker exec -t efm-master ${INSTALLDIR}/bin/efm add-node efm ${WITNESS_IP} 1
+docker exec -t efm-master ${INSTALLDIR}/bin/efm allow-node efm ${WITNESS_IP}
 
 # Set up witness
 printf "\e[0;32m>>> STARTING UP WITNESS EFM PROCESS\n\e[0m"
-docker exec -t efm-witness bash --login -c "echo ${MASTER_IP}:5430 ${STANDBY_IP}:5430 >> /etc/efm-${VER}/efm.nodes"
-docker exec -t efm-witness /usr/efm-${VER}/bin/set_as_witness.sh
+if [[ $VER == "2.1" || $VER == "2.0" ]]
+then
+  docker exec -t efm-witness bash --login -c "echo ${MASTER_IP}:5430 ${STANDBY_IP}:5430 >> /etc/efm-${VER}/efm.nodes"
+fi
+docker exec -t efm-witness ${INSTALLDIR}/bin/set_as_witness.sh
 
 # Show status
-docker exec -it efm-master /usr/efm-${VER}/bin/efm cluster-status efm
+docker exec -it efm-master ${INSTALLDIR}/bin/efm cluster-status efm
