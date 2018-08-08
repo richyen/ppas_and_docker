@@ -48,5 +48,6 @@ chmod 700 ${DATADIR}
 service ${SERVICE_NAME} start
 
 # Configure and start EFM
+echo "${MASTER_HOST}:5430" >> /etc/edb/efm-${EFM_VER}/efm.nodes
 sed -i "s/bind.address.*/bind.address=`hostname -i`:5430/" /etc/edb/efm-${EFM_VER}/efm.properties
 service efm-${EFM_VER} start
