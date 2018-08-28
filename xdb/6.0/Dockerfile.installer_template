@@ -5,11 +5,12 @@ ARG INSTALLER_FILENAME
 ARG EDBUSERNAME
 ARG EDBPASSWORD
 
-ENV XDB_VERSION=6.0
+ENV XDB_VERSION=6.2
 ENV INSTALLDIR=/usr/ppas-xdb-${XDB_VERSION}
 ENV JAVA_VERSION=1.7
 
 # install required packages.
+RUN yum -y install yum-plugin-ovl
 RUN yum -y install java-${JAVA_VERSION}.0-openjdk-devel
 
 # tweak conf files so logical replication can happen
