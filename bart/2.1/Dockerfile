@@ -1,33 +1,39 @@
-FROM ppas95:latest
+FROM epas10:latest
 MAINTAINER richard.yen@enterprisedb.com
 
-ARG YUMUSERNAME
-ARG YUMPASSWORD
+### Assuming base image has edb.repo installed
+### If not, then un-comment the following lines and build with --build-args YUMUSERNAME=*** --build-args YUMPASSWORD=***
+
+#ARG YUMUSERNAME
+#ARG YUMPASSWORD
+#RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+#RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 
 ENV BART_VERSION=2.1
 ENV BART_PATH="/usr/edb/bart"
 
-RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
-RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
+# make BART binary available in $PATH
+RUN echo "export PATH=${BART_PATH}/bin:\${PATH}" >> /etc/profile.d/pg_env.sh
 
-# run update and install require packages.
+# install required packages
 RUN yum -y install yum-plugin-ovl
 RUN yum -y install epel-release
 RUN yum -y install boost*
-RUN yum -y install edb-bart tar
+RUN yum -y --enablerepo=edbas10 install vim tar edb-as10-server-libs sudo openssh-server
+RUN yum -y --enablerepo=enterprisedb-tools install edb-bart
 
-RUN mkdir /tmp/wal_archive
-RUN chown enterprisedb:enterprisedb /tmp/wal_archive
-RUN sed -i "s/^#archive_mode.*/archive_mode = on/" /var/lib/ppas/${PGMAJOR}/data/postgresql.conf
-RUN sed -i "s/^#archive_command.*/archive_command = 'cp %p \/tmp\/wal_archive\/%f'/" /var/lib/ppas/${PGMAJOR}/data/postgresql.conf
-
-# put basic test script in enterprisedb's Linux homedir
-COPY bart_test.sh /var/lib/ppas/bart_test.sh
-
-# set custom BART script
+# set custom BART config
 COPY bart.cfg ${BART_PATH}/etc/bart.cfg
-RUN sed -i "s/pgport_placeholder/${PGPORT}/g"   ${BART_PATH}/etc/bart.cfg
-RUN sed -i "s/pgmajor_placeholder/${PGMAJOR}/g" ${BART_PATH}/etc/bart.cfg
+RUN mkdir -p /tmp/bart_backups/epas/archived_wals
+RUN chown -R enterprisedb:enterprisedb /tmp/bart_backups/epas
+RUN sed -i "s/^#archive_mode.*/archive_mode = on/" /var/lib/edb/as10/data/postgresql.conf
+RUN sed -i "s/^#archive_command.*/archive_command = 'cp %p \/tmp\/bart_backups\/epas\/archived_wals\/%f'/" /var/lib/edb/as10/data/postgresql.conf
+RUN sed -i "s/repuser/all/" /var/lib/edb/as10/data/pg_hba.conf
 
-# make BART binary available in $PATH
-RUN echo "export PATH=${BART_PATH}/bin:\${PATH}" >> /etc/profile.d/pg_env.sh
+# initialize BART
+RUN sudo -u enterprisedb /usr/edb/bart/bin/bart init
+
+# install test script
+COPY bart_test.sh /tmp/bart_test.sh
+
+CMD sudo -u enterprisedb /usr/edb/bart/bin/bart-scanner -d --daemon && service sshd start && tail -f /var/log/yum.log
