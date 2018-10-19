@@ -9,10 +9,10 @@ ENV PGMAJOR=%%PGMAJOR%%
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
-ENV PATH=/usr/ppas-${PGMAJOR}/bin:${PATH}
+ENV PATH=/usr/edb/as${PGMAJOR}/bin:${PATH}
 # ENV PATH=/usr/edb/as${PGMAJOR}/bin:${PATH}
-ENV PGDATA=/var/lib/ppas/${PGMAJOR}/data
-ENV PGLOG=/var/lib/ppas/${PGMAJOR}/pgstartup.log
+ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
+ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
@@ -21,8 +21,8 @@ COPY ${INSTALLER_FILENAME} /tmp/${INSTALLER_FILENAME}
 RUN chmod 755 /tmp/${INSTALLER_FILENAME}
 
 # For legacy installers, use the commented one below
-# RUN /tmp/${INSTALLER_FILENAME} --mode unattended --prefix /usr/ppas-${PGMAJOR} --datadir ${PGDATA}
-RUN /tmp/${INSTALLER_FILENAME} --mode unattended --webusername "${EDBUSERNAME}" --webpassword "${EDBPASSWORD}" --prefix /usr/ppas-${PGMAJOR} --datadir ${PGDATA}
+# RUN /tmp/${INSTALLER_FILENAME} --mode unattended --prefix /usr/edb/as${PGMAJOR} --datadir ${PGDATA}
+RUN /tmp/${INSTALLER_FILENAME} --mode unattended --webusername "${EDBUSERNAME}" --webpassword "${EDBPASSWORD}" --prefix /usr/edb/as${PGMAJOR} --datadir ${PGDATA}
 
 RUN echo 'root:root'|chpasswd
 
@@ -49,6 +49,6 @@ RUN sed -i "s/^#max_wal_senders = 0/max_wal_senders = 5/" ${PGDATA}/postgresql.c
 
 EXPOSE ${PGPORT}
 
-# For legacy versions, use the commented one below
+# For legacy versions prior to 9.6, use the commented one below
 # CMD service ppas-${PGMAJOR} restart && tail -F ${PGLOG}
 CMD service edb-as-${PGMAJOR} restart && tail -F ${PGLOG}
