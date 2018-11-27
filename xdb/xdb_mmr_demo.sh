@@ -34,7 +34,7 @@ docker run --privileged=true --publish-all=true --interactive=false --tty=true -
 for ((i=2;i<=${num_nodes};i++))
 do
   C_NAME="xdb${C_SUFFIX}-${i}"
-  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} ppas95:latest
+  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} epas10:latest
   IP=`docker exec -it ${C_NAME} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
   printf "\e[0;33m${C_NAME} => ${IP}\n\e[0m"
   OTHER_MASTER_IPS="${OTHER_MASTER_IPS} ${IP}"
@@ -44,12 +44,13 @@ if [[ ${XDB_VERSION} == '6.2' ]]
 then
   for ((i=1;i<=${num_nodes};i++))
   do
-    PGMAJOR=9.5
-    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^wal_level.*/wal_level = logical/" /var/lib/ppas/${PGMAJOR}/data/postgresql.conf
-    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^#max_replication_slots.*/max_replication_slots = 5/" /var/lib/ppas/${PGMAJOR}/data/postgresql.conf
-    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^#track_commit_timestamp.*/track_commit_timestamp = on/" /var/lib/ppas/${PGMAJOR}/data/postgresql.conf
-    docker exec -t xdb${C_SUFFIX}-${i} sh -c "echo \"host replication enterprisedb 0.0.0.0/0 trust\" >> /var/lib/ppas/${PGMAJOR}/data/pg_hba.conf"
-    docker exec -t xdb${C_SUFFIX}-${i} service ppas-9.5 restart
+    PGMAJOR=10
+    PGDATA="/var/lib/edb/as${PGMAJOR}"
+    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^wal_level.*/wal_level = logical/" ${PGDATA}/data/postgresql.conf
+    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^#max_replication_slots.*/max_replication_slots = 5/" ${PGDATA}/data/postgresql.conf
+    docker exec -t xdb${C_SUFFIX}-${i} sed -i "s/^#track_commit_timestamp.*/track_commit_timestamp = on/" ${PGDATA}/data/postgresql.conf
+    docker exec -t xdb${C_SUFFIX}-${i} sh -c "echo \"host replication enterprisedb 0.0.0.0/0 trust\" >> ${PGDATA}/data/pg_hba.conf"
+    docker exec -t xdb${C_SUFFIX}-${i} service edb-as-${PGMAJOR} restart
   done
 fi
 
