@@ -40,6 +40,7 @@ do
     docker exec -t pem-agent${i} sed -i "s/pemagent/pemworker/" /tmp/register_pem_agent.sh
     docker exec -t pem-agent${i} sed -i "s/%%PEM_SERVER_IP%%/${MASTER_IP}/" /tmp/register_pem_agent.sh
     docker exec -t pem-agent${i} sed -i "s/%%AGENT_NAME%%/pemagent${i}/" /tmp/register_pem_agent.sh
+    docker exec -t pem-agent${i} sed -i "s/^/PGPASSWORD=abc123 /" /tmp/register_pem_agent.sh
     docker exec -t pem-agent${i} bash --login -c "/tmp/register_pem_agent.sh"
     docker exec pem-agent${i} service pemagent start
   else
@@ -50,7 +51,7 @@ done
 if [[ `uname` = 'Darwin' ]]
 then
   printf "\e[0;33m>>> LAUNCHING PEM CONSOLE\n\e[0m"
-  dockerip=`localhost`
+  dockerip="127.0.0.1"
   # If using docker-machine or boot2docker, then uncomment below
   # dockerip=`docker-machine ip docker-vm`;
   port=`docker ps -f name=pem-server | grep 8443 | sed -e 's/.*0.0.0.0:\(.*\)->8443.*/\1/'`
