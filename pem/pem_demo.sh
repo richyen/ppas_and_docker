@@ -1,6 +1,5 @@
 #!/bin/bash
 
-PEM_VER=7
 NUM_AGENTS=2
 
 if [[ ${1} == 'destroy' ]]
@@ -18,34 +17,20 @@ fi
 printf "\e[0;33m==== Building containers for PEM cluster ====\n\e[0m"
 printf "\e[0;33m>>> SETTING UP PEM SERVER\n\e[0m"
 docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=pem-server --detach=true --name=pem-server pemserver:latest
-
-printf "\e[0;33m>>> SETTING UP PEM AGENTS\n\e[0m"
-docker exec pem-server service pemagent start
-
 MASTER_IP=`docker exec -it pem-server ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
+docker exec -t pem-server sed -i "s/%%PEM_SERVER_IP%%/pem-server/" /tmp/configure_pem_server.sh
+# docker exec -t pem-server sed -i "s/%%PEM_SERVER_IP%%/${MASTER_IP}/" /tmp/configure_pem_server.sh
+docker exec -t pem-server bash --login -c "/tmp/configure_pem_server.sh"
+
 for ((i=1;i<=${NUM_AGENTS};i++))
 do
   C_NAME="pem-agent${i}"
   docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} pemagent:latest
-  if [[ ${PEM_VER} -eq 6 ]]
-  then
-    docker exec -t pem-agent${i} sed -i "s/pemagent/pemworker/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/%%PEM_SERVER_IP%%/${MASTER_IP}/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/%%AGENT_NAME%%/pemagent${i}/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} bash --login -c "/tmp/register_pem_agent.sh"
-    docker exec pem-agent${i} service pemagent start
-  elif [[ ${PEM_VER} -eq 7 ]]
-  then
-    docker exec -t pem-agent${i} sed -i "s/bin/agent\/bin/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/pemagent/pemworker/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/%%PEM_SERVER_IP%%/${MASTER_IP}/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/%%AGENT_NAME%%/pemagent${i}/" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} sed -i "s/^/PGPASSWORD=abc123 /" /tmp/register_pem_agent.sh
-    docker exec -t pem-agent${i} bash --login -c "/tmp/register_pem_agent.sh"
-    docker exec pem-agent${i} service pemagent start
-  else
-    docker exec -t pem-agent${i} bash --login -c "/tmp/install_pem_agent.sh ${MASTER_IP}"
-  fi
+  docker exec -t pem-agent${i} sed -i "s/pemagent/pemworker/" /tmp/register_pem_agent.sh
+  docker exec -t pem-agent${i} sed -i "s/%%PEM_SERVER_IP%%/${MASTER_IP}/" /tmp/register_pem_agent.sh
+  docker exec -t pem-agent${i} sed -i "s/%%AGENT_NAME%%/pemagent${i}/" /tmp/register_pem_agent.sh
+  docker exec -tu enterprisedb pem-agent${i} bash --login -c "/tmp/register_pem_agent.sh"
+  docker exec pem-agent${i} service pemagent start
 done
 
 if [[ `uname` = 'Darwin' ]]
