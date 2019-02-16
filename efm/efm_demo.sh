@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER='3.1'
+VER='3.3'
 IMAGE_NAME="efm:${VER}"
 # INSTALLDIR="/usr/efm-${VER}"
 INSTALLDIR="/usr/edb/efm-${VER}"
