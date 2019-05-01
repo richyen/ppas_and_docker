@@ -1,0 +1,75 @@
+version: '3'
+services:
+
+    leader:
+        image: eprs:6
+        build: .
+        container_name: eprs-leader
+        hostname: eprs-leader
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+          - "2181"
+          - "2881"
+          - "3881"
+          - "8081"
+          - "8082"
+        networks:
+            eprs:
+                ipv4_address: 10.111.221.11
+        volumes:
+          - "/Users/richyen/Desktop:/docker"
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+        command: "/usr/sbin/init"
+    node2:
+        image: eprs:6
+        container_name: eprs-node2
+        hostname: eprs-node2
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+          - "2181"
+          - "2881"
+          - "3881"
+          - "8081"
+          - "8082"
+        depends_on:
+          - leader
+        networks:
+            eprs:
+                ipv4_address: 10.111.221.12
+        volumes:
+          - "/Users/richyen/Desktop:/docker"
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+        command: "/usr/sbin/init"
+    node3:
+        image: eprs:6
+        container_name: eprs-node3
+        hostname: eprs-node3
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+          - "2181"
+          - "2881"
+          - "3881"
+          - "8081"
+          - "8082"
+        depends_on:
+          - leader
+          - node2
+        networks:
+            eprs:
+                ipv4_address: 10.111.221.13
+        volumes:
+          - "/Users/richyen/Desktop:/docker"
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+        command: "/usr/sbin/init"
+networks:
+    eprs:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.221.1/24
