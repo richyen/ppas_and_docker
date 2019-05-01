@@ -1,0 +1,52 @@
+FROM gisjedi/gosu-centos
+MAINTAINER richard.yen@enterprisedb.com
+
+ARG YUMUSERNAME
+ARG YUMPASSWORD 
+
+ENV REPONAME=edbas10
+ENV PGMAJOR=10
+ENV PGPORT=5432
+ENV PGDATABASE=edb
+ENV PGUSER=enterprisedb
+ENV PATH=/usr/edb/as${PGMAJOR}/bin:${PATH}
+ENV PGDATA=/var/lib/edb/as${PGMAJOR}/data
+ENV PGLOG=/var/lib/edb/as${PGMAJOR}/pgstartup.log
+
+RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
+RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
+
+RUN yum -y update
+RUN yum -y install yum-plugin-ovl
+RUN yum -y install epel-release
+RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGMAJOR}-server.x86_64 sudo
+
+RUN echo 'root:root'|chpasswd
+
+# setting postgres user for login
+RUN adduser --home-dir /home/postgres --create-home postgres
+RUN echo 'postgres   ALL=(ALL)   NOPASSWD: ALL' >> /etc/sudoers
+RUN echo 'postgres:postgres'|chpasswd
+
+RUN gosu enterprisedb initdb -D ${PGDATA}
+
+RUN echo "export PGPORT=${PGPORT}"         >> /etc/profile.d/pg_env.sh
+RUN echo "export PGDATABASE=${PGDATABASE}" >> /etc/profile.d/pg_env.sh
+RUN echo "export PGUSER=${PGUSER}"         >> /etc/profile.d/pg_env.sh
+RUN echo "export PATH=${PATH}"             >> /etc/profile.d/pg_env.sh
+
+RUN echo "local  all         all                 trust" >  ${PGDATA}/pg_hba.conf
+RUN echo "local  replication all                 trust" >> ${PGDATA}/pg_hba.conf
+RUN echo "host   replication repuser  0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf
+RUN echo "host   all         all      0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf
+
+RUN sed -i "s/^#port = .*/port = ${PGPORT}/"         ${PGDATA}/postgresql.conf
+RUN sed -i "s/^port = .*/port = ${PGPORT}/"         ${PGDATA}/postgresql.conf
+RUN sed -i "s/^logging_collector = off/logging_collector = on/" ${PGDATA}/postgresql.conf                                                                                  
+RUN sed -i "s/^#wal_level.*/wal_level=hot_standby/" ${PGDATA}/postgresql.conf
+RUN sed -i "s/^#wal_keep_segments = 0/wal_keep_segments = 500/" ${PGDATA}/postgresql.conf
+RUN sed -i "s/^#max_wal_senders = 0/max_wal_senders = 5/" ${PGDATA}/postgresql.conf
+
+EXPOSE ${PGPORT}
+
+CMD pg_ctl -D ${PGDATA} start && tail -F ${PGLOG}
