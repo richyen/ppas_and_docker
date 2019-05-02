@@ -21,7 +21,7 @@ services:
         volumes:
           - "/Users/richyen/Desktop:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "/usr/sbin/init"
+        command: "tail -f /var/log/yum.log"
     node2:
         image: eprs:6
         container_name: eprs-node2
@@ -43,7 +43,7 @@ services:
         volumes:
           - "/Users/richyen/Desktop:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "/usr/sbin/init"
+        command: "tail -f /var/log/yum.log"
     node3:
         image: eprs:6
         container_name: eprs-node3
@@ -66,7 +66,7 @@ services:
         volumes:
           - "/Users/richyen/Desktop:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "/usr/sbin/init"
+        command: "tail -f /var/log/yum.log"
 networks:
     eprs:
         driver: "bridge"
