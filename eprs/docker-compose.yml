@@ -2,7 +2,7 @@ version: '3'
 services:
 
     leader:
-        image: eprs:6
+        image: eprs:7
         build: .
         container_name: eprs-leader
         hostname: eprs-leader
@@ -21,9 +21,9 @@ services:
         volumes:
           - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "tail -f /var/log/yum.log"
+        command: "/usr/sbin/init"
     node2:
-        image: eprs:6
+        image: eprs:7
         container_name: eprs-node2
         hostname: eprs-node2
         privileged: true
@@ -43,9 +43,9 @@ services:
         volumes:
           - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "tail -f /var/log/yum.log"
+        command: "/usr/sbin/init"
     node3:
-        image: eprs:6
+        image: eprs:7
         container_name: eprs-node3
         hostname: eprs-node3
         privileged: true
@@ -66,7 +66,7 @@ services:
         volumes:
           - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
-        command: "tail -f /var/log/yum.log"
+        command: "/usr/sbin/init"
 networks:
     eprs:
         driver: "bridge"

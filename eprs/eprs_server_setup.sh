@@ -9,7 +9,7 @@ max_replication_slots = 10
 track_commit_timestamp = on
 EOT
 
-if [[ `cat /etc/*release* | grep cpe | cut -f5 -d ':'` -eq 6 ]]
+if [[ `cat /etc/*release* | grep "^cpe" | cut -f5 -d ':'` -eq 6 ]]
 then
   service edb-as-${PGVERSION} start
   #/usr/edb/rs-7.0/server/bin/runServer.sh --host 10.111.221.11 --config /usr/edb/rs-7.0/server/etc &
