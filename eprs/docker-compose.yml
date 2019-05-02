@@ -19,7 +19,7 @@ services:
             eprs:
                 ipv4_address: 10.111.221.11
         volumes:
-          - "/Users/richyen/Desktop:/docker"
+          - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
         command: "tail -f /var/log/yum.log"
     node2:
@@ -41,7 +41,7 @@ services:
             eprs:
                 ipv4_address: 10.111.221.12
         volumes:
-          - "/Users/richyen/Desktop:/docker"
+          - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
         command: "tail -f /var/log/yum.log"
     node3:
@@ -64,7 +64,7 @@ services:
             eprs:
                 ipv4_address: 10.111.221.13
         volumes:
-          - "/Users/richyen/Desktop:/docker"
+          - "./:/docker"
           - "/sys/fs/cgroup:/sys/fs/cgroup"
         command: "tail -f /var/log/yum.log"
 networks:
