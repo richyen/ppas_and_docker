@@ -1,7 +1,7 @@
-FROM epas10:10.6.13
+FROM epas10:7
 ENV ver=7
-ENV USERNAME=richard.yen
-ENV USERPASS=boo
+ENV USERNAME=''
+ENV USERPASS=''
 RUN yum -y install yum-plugin-ovl
 RUN yum -y install epel-release
 RUN yum -y install java-1.8.0-openjdk-devel vim
