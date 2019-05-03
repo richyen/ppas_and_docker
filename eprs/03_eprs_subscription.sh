@@ -13,6 +13,7 @@ done
 
 for n in `seq 11 13`
 do
+  # password is 'adminedb'
   ${eprs_client} -adddb \
             -servername node${n} \
             -dbid node${n}db \
@@ -37,5 +38,9 @@ for n in `seq 12 13`
 do
   ${eprs_client} -joinpub -servername node${n} -dbid node${n}db -nodetype RW -pubname samplepub -user admin
   ${eprs_client} -startsnapshot -pubname samplepub -dbid node${n}db -user admin
+done
+sleep 10
+for n in `seq 12 13`
+do
   ${eprs_client} -startstreaming -pubname samplepub -dbid node${n}db -user admin
 done
