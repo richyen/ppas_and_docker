@@ -244,7 +244,7 @@ function create_container ()
    local C_NAME="$1"
    local I_NAME="$2"
    
-  messg=$(docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} ${I_NAME}  2>&1)
+  messg=$(docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Code:/Code -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} ${I_NAME}  2>&1)
   #if_error "$?" "${messg}"
   echo "$?" "${messg}"
  
