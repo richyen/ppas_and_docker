@@ -30,11 +30,11 @@ fi
 OTHER_MASTER_IPS=''
 printf "\e[0;33m==== Building containers for xDB cluster ====\n\e[0m"
 C_NAME="xdb${C_SUFFIX}-1"
-docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} ${IMAGE_NAME}
+docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${HOME}/Code:/docker --hostname=${C_NAME} --detach=true --name=${C_NAME} ${IMAGE_NAME}
 for ((i=2;i<=${num_nodes};i++))
 do
   C_NAME="xdb${C_SUFFIX}-${i}"
-  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} epas10:latest
+  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${HOME}/Code:/docker --hostname=${C_NAME} --detach=true --name=${C_NAME} epas10:latest
   IP=`docker exec -it ${C_NAME} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
   printf "\e[0;33m${C_NAME} => ${IP}\n\e[0m"
   OTHER_MASTER_IPS="${OTHER_MASTER_IPS} ${IP}"

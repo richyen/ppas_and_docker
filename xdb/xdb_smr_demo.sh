@@ -22,7 +22,7 @@ printf "\e[0;33m==== Building containers for xDB cluster ====\n\e[0m"
 for i in master slave
 do
   C_NAME="xdb_smr_${i}"
-  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v /Users/${USER}/Desktop:/Desktop --hostname=${C_NAME} --detach=true --name=${C_NAME} ${IMAGE_NAME}
+  docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${HOME}/Code:/docker --hostname=${C_NAME} --detach=true --name=${C_NAME} ${IMAGE_NAME}
   IP=`docker exec -it ${C_NAME} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
   printf "\e[0;33m${C_NAME} => ${IP}\n\e[0m"
 done

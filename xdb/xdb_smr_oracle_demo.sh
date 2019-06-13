@@ -18,14 +18,14 @@ then
 fi
 
 printf "\e[0;33m==== Building containers for xDB cluster ====\n\e[0m"
-docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${PWD}:/xdb_demo -v /Users/${USER}/Desktop:/Desktop --hostname=${O_NAME} --detach=true --name=${O_NAME} wnameless/oracle-xe-11g:latest
+docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${PWD}:/xdb_demo -v ${HOME}/Code:/docker --hostname=${O_NAME} --detach=true --name=${O_NAME} wnameless/oracle-xe-11g:latest
 ORA_IP=`docker exec -it ${O_NAME} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
 docker exec -t ${O_NAME} bash --login -c "echo 'export ORACLE_HOME=/u01/app/oracle/product/11.2.0/xe' >> /etc/profile"
 docker exec -t ${O_NAME} bash --login -c "echo 'export PATH=\$ORACLE_HOME/bin:\$PATH' >> /etc/profile"
 docker exec -t ${O_NAME} bash --login -c "echo 'export ORACLE_SID=XE' >> /etc/profile"
 printf "\e[0;33m${O_NAME} => ${ORA_IP}\n\e[0m"
 
-docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${PWD}:/xdb_demo -v /Users/${USER}/Desktop:/Desktop --hostname=${P_NAME} --detach=true --name=${P_NAME} ${IMAGE_NAME}
+docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${PWD}:/xdb_demo -v ${HOME}/Code:/docker --hostname=${P_NAME} --detach=true --name=${P_NAME} ${IMAGE_NAME}
 PG_IP=`docker exec -it ${P_NAME} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n`
 printf "\e[0;33m${P_NAME} => ${PG_IP}\n\e[0m"
 
