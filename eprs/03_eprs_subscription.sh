@@ -14,7 +14,7 @@ done
 
 for n in `seq 11 13`
 do
-  # password is '${xdbadmin}edb'
+  # password is 'adminedb'
   runRepCLI.sh -adddb \
             -servername node${n} \
             -dbid node${n}db \
