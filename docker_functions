@@ -35,24 +35,6 @@
 # verify any  undefined shell variables
 set -u
 
-### The three DOCKER_* environment variables below should be commented out when not
-### using docker-machine or boot2docker
-#export DOCKER_HOST=tcp://$(/usr/local/bin/boot2docker ip 2>/dev/null):2376
-#export DOCKER_CERT_PATH=/Users/${USER}/.boot2docker/certs/boot2docker-vm
-#export DOCKER_TLS_VERIFY=1
-PGPORT=5432
-PGHOME=/usr/ppas-9.4
-PSQL=${PGHOME}/bin/psql
-PPFM_PORT=5052
-SSH_PORT=22
-PEM_PORT=80
-PGUSER=postgres
-PG_VERSION=9.4
-PGDATA="/var/lib/ppas/9.4/data"
-export PSQL PPFM_PORT PGHOME PGPORT 
-
-alias ssh='ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no'
-
 ######################################################################################
 # function: print messages with process id
 ######################################################################################
@@ -109,41 +91,6 @@ function if_error
 
 
 ######################################################################################
-# function: is_container_exists
-######################################################################################
-function is_container_exists()
-{
-    local C_NAME="$1"
-    local c_exists=$(docker inspect --format='{{(index .ID) }}' ${C_NAME} 2>&1)
-    if_error "$?" "${c_exists}"
-}
-
-
-######################################################################################
-# function: get container image id
-######################################################################################
-function container_id()
-{
-    local C_NAME="$1"
-    local container_id=$(docker inspect --format='{{(index .ID) }}' ${C_NAME} 2>&1)
-    if_error "$?" "${container_id}"
-
-    echo "${container_id}"
-}
-
-######################################################################################
-# function: get container port number
-######################################################################################
-function container_port()
-{
-   local C_NAME="$1"
-   local container_port=$(docker inspect --format='{{(index (index .NetworkSettings.Ports "22/tcp") 0).HostPort}}' ${C_NAME} 2>&1)
-   if_error "$?" "${container_port}"
-
-   echo "${container_port}"
-}
-
-######################################################################################
 # function: get container ip address
 ######################################################################################
 function container_ipaddr ()
@@ -164,7 +111,7 @@ function list_containers ()
 }
 
 ######################################################################################
-# function: list_containers
+# function: container_status
 ######################################################################################
 function container_status
 {
@@ -185,55 +132,12 @@ function list_images ()
 
 
 ######################################################################################
-# function: is_images_exists
-######################################################################################
-function is_image_exists ()
-{
-    local I_NAME="$1"
-    
-    local i_exists=$(docker inspect --format='{{(index .id) }}' ${C_NAME} 2>&1)
-    if_error "$?" "${i_exists}"
-}
-
-######################################################################################
-# function: image_id
-######################################################################################
-function image_id()
-{
-    local I_NAME="$1"
-    local image_id=$(docker inspect --format='{{(index .id) }}' ${C_NAME} 2>&1)
-    if_error "$?" "${image_id}"
-
-    echo "${image_id}"
-}
-
-######################################################################################
-# function: ssh-to-container
+# function: pseudo-ssh into a container
 ######################################################################################
 function ssh_to_container ()
 {
-#   local C_USER="$1"
    local C_NAME="$1"
-   
-#   port=$(container_port ${C_NAME} 2>&1)
-#   if_error "$?" "${port}" 
-   
-#   ssh -p $port ${C_USER}@localhost
-    docker exec -it ${C_NAME} "/bin/bash"
-}
-
-######################################################################################
-# function: execute commands on container
-######################################################################################
-function exec_on_container ()
-{
-  C_USER="$1"
-  C_NAME="$2"
-  shift 2
-  local COMMANDS="$@"
- 
-  port=$(container_port ${C_NAME} 2>&1)
-  ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no -p $port "${C_USER}"@localhost "${COMMANDS}"
+   docker exec -it ${C_NAME} "/bin/bash"
 }
 
 ######################################################################################
@@ -245,24 +149,7 @@ function create_container ()
    local I_NAME="$2"
    
   messg=$(docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${HOME}/Code:/docker --hostname=${C_NAME} --detach=true --name=${C_NAME} ${I_NAME}  2>&1)
-  #if_error "$?" "${messg}"
   echo "$?" "${messg}"
- 
-  plog "${C_NAME} created successfully."
-}
-
-######################################################################################
-# function: destroy_container
-######################################################################################
-function destroy_containers ()
-{
-   local C_NAMES="$@"
-   
-   local messg=$(docker kill "${C_NAMES}" 2>&1)
-   if_error "$?" "${messg}"
-   local messg=$(docker rm "${C_NAMES}" 2>&1)
-   if_error "$?" "${messg}"
-   plog "${C_NAMES} destroy successfully."
 }
 
 ######################################################################################
@@ -273,8 +160,7 @@ function start_containers ()
    local C_NAMES="$@"
    
    local messg=$(docker start ${C_NAMES} 2>&1)
-   if_error "$?" "${messg}"
-   plog "${C_NAMES} started successfully."
+   echo "$?" "${messg}"
 }
 
 ######################################################################################
@@ -285,64 +171,8 @@ function stop_container ()
    local C_NAMES="$@"
    
    local messg=$(docker stop --time=10 ${C_NAMES} 2>&1)
-   if_error "$?" "${messg}"
-   plog "${C_NAMES} stopped successfully."
+   echo "$?" "${messg}"
 }
-
-######################################################################################
-# function: create docker file for ppfm_test
-######################################################################################
-function ppas93_base_dockerfile()
-{
-  echo "FROM centos:6.4"
-  echo "MAINTAINER vibhor.aim@gmail.com"
-  echo "RUN yum update -y"
-  echo "RUN yum install -y which"
-  echo "RUN yum install -y perl"
-  echo "RUN yum install -y python-paramiko"
-  echo "RUN yum install -y vim"
-  echo "ADD id_rsa.pub /tmp/pub_key"
-  echo "RUN mkdir -p ~root/.ssh"
-  echo "RUN cat /tmp/pub_key >> ~root/.ssh/authorized_keys"
-  echo "RUN chown -R root:root ~root/.ssh/; chmod -R 0700 ~root/.ssh/"
-  echo "RUN yum install -y openssh-server"
-  echo "RUN yum install -y openssh-clients"
-  echo "RUN service sshd start && service sshd stop"
-  echo "RUN perl -i -pe 's|^UsePAM yes|UsePAM no|' /etc/ssh/sshd_config"
-  echo "ADD ppas.repo /etc/yum.repos.d/ppas.repo"
-  echo "RUN yum install -y ppas93"
-  echo "RUN userdel enterprisedb"
-  echo "RUN adduser --home-dir /home/postgres --create-home postgres"
-  echo "ADD ppas_bash_profile.sh ~postgres/.bash_profile"
-  echo "RUN chown -R postgres:postgres ~postgres/.bash_profile"
-  echo "ADD ppas93_initd.sh  /etc/init.d/ppas-9.4"
-  echo "RUN chown -R postgres:postgres /var/lib/ppas"
-  echo "RUN service ppas-9.4 initdb"
-  echo "ADD pgconf/pg_hba.conf /var/lib/ppas/9.4/data/pg_hba.conf"
-  echo "ADD pgconf/postgresql.conf /var/lib/ppas/9.4/data/postgresql.conf"
-  echo "RUN chown postgres:postgres /var/lib/ppas/9.4/data/postgresql.conf"
-  echo "RUN chown postgres:postgres /var/lib/ppas/9.4/data/pg_hba.conf"
-  echo "RUN mkdir -p ~postgres/.ssh"
-  echo "RUN cat /tmp/pub_key >> ~postgres/.ssh/authorized_keys"
-  echo "RUN chown -R postgres:postgres ~postgres/.ssh/; chmod -R 0700 ~postgres/.ssh/"
-  echo "EXPOSE 5432"
-  echo "EXPOSE 22"
-  echo "EXPOSE 5052"
-  echo "EXPOSE 80"
-  echo "CMD service ppas-9.4 start ; echo starting SSH server in foreground;  /usr/sbin/sshd -D"
-}
-
-#######################################################################################
-# build image function
-######################################################################################
-function build_image()
-{
-   local IMAGE_NAME=$1
-   local DIRECTORY=$2
-
-   docker build  --force-rm=true  --rm=true --tag=${IMAGE_NAME} ${DIRECTORY}
-}
-
 
 #######################################################################################
 # remove broken containers
@@ -367,52 +197,3 @@ function remove_broken_images()
 		sleep 10
     docker images | grep none.*none | awk '{ print $3 }' | xargs docker rmi
 }
-
-#######################################################################################
-# destroy image function
-######################################################################################
-function remove_image()
-{
-  local IMAGE_NAME=$1
-
-  docker rmi ${IMAGE_NAME}
-
-}
-
-#######################################################################################
-# standby create function
-#######################################################################################
-function create_standby()
-{
-   local MASTER=$1
-   local STANDBY_NAME=$2
-   local STANDBY_IMAGE=$3
-   
-   MASTER_IP=$(docker exec -it ${MASTER} ifconfig | grep Bcast | awk '{ print $2 }' | cut -f2 -d':' | xargs echo -n)
-   
-   plog "creating repuser on ${MASTER}"
-   docker exec -it ${MASTER} /usr/ppas-9.4/bin/psql -c "CREATE USER repuser WITH REPLICATION;" -U enterprisedb -p 5432 edb >>/dev/null
-   plog "creating container ${STANDBY_NAME}"
-   create_container ${STANDBY_NAME} ${STANDBY_IMAGE} 
-   plog "cleaning old data directory."
-   docker exec -it ${STANDBY_NAME} service ppas-9.4 stop
-	 sleep 5 # Associated with race condition below
-   docker exec -it ${STANDBY_NAME} rm -rf /var/lib/ppas/9.4/data 
-   docker exec -it ${STANDBY_NAME} mkdir -p /var/lib/ppas/9.4/data
-   docker exec -it ${STANDBY_NAME} chmod 700 /var/lib/ppas/9.4/data  
-   plog "pulling base backup"
-   docker exec -it ${STANDBY_NAME} /usr/ppas-9.4/bin/pg_basebackup -h ${MASTER_IP} -U repuser -p 5432 -R -D /var/lib/ppas/9.4/data/
-	 sleep 10 # Some kind of race condition keeps ppas from listening on the network interface, therfore prevents it from starting up
-   docker exec -it ${STANDBY_NAME} chown -R enterprisedb:enterprisedb /var/lib/ppas/9.4/data/
-   docker exec -it ${STANDBY_NAME} sed -i "s/^#hot_standby = off/hot_standby = on/" /var/lib/ppas/9.4/data/postgresql.conf
-   docker exec -it ${STANDBY_NAME} service ppas-9.4 start
-   plog "starting standby"
-   while [[ $(docker exec -it ${STANDBY_NAME}  ps -eaf|grep "wal receiver process"|grep -v grep |wc -l) -ne 1 ]] 
-   do
-     sleep 2
-   done
-   plog "replication status:"
-   docker exec -it ${MASTER} /usr/ppas-9.4/bin/psql -c "SELECT client_addr,backend_start, state, sync_state  FROM pg_stat_replication" -U enterprisedb -p 5432 edb
-
-}
-
