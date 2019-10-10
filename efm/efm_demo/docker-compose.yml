@@ -1,0 +1,85 @@
+---
+version: '3'
+services:
+    primary:
+        image: efm:latest
+        container_name: primary
+        hostname: primary
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+        entrypoint:
+          - "/docker/entrypoint.sh"
+
+    standby1:
+        image: efm:latest
+        container_name: standby1
+        hostname: standby1
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.12
+        entrypoint:
+          - "/docker/entrypoint.sh"
+        depends_on:
+          - primary
+
+    standby2:
+        image: efm:latest
+        container_name: standby2
+        hostname: standby2
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.13
+        entrypoint:
+          - "/docker/entrypoint.sh"
+        depends_on:
+          - primary
+
+    witness:
+        image: efm:latest
+        container_name: witness
+        hostname: witness
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.14
+        entrypoint:
+          - "/docker/entrypoint.sh"
+        depends_on:
+          - primary
+          - standby1
+          - standby2
+
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24
