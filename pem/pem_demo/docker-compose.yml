@@ -1,0 +1,61 @@
+---
+version: '3'
+services:
+    pem-server:
+        image: pemserver:latest
+        container_name: pem-server
+        hostname: pem-server
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+          - "8443:8443"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+        entrypoint:
+          - "/docker/entrypoint.sh"
+
+    pem-agent1:
+        image: pemagent:latest
+        container_name: pem-agent1
+        hostname: pem-agent1
+        privileged: true
+        tty: true
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.12
+        depends_on:
+          - pem-server
+        entrypoint:
+          - "/docker/entrypoint.sh"
+
+    pem-agent2:
+        image: pemagent:latest
+        container_name: pem-agent2
+        hostname: pem-agent2
+        privileged: true
+        tty: true
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.13
+        depends_on:
+          - pem-server
+        entrypoint:
+          - "/docker/entrypoint.sh"
+
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24
