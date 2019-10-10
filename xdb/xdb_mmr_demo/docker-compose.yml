@@ -1,0 +1,45 @@
+---
+version: '3'
+services:
+    pub1:
+        image: centos6/epas10:latest
+        container_name: pub1
+        hostname: pub1
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.12
+        entrypoint:
+          - "/docker/pub1_entrypoint.sh"
+
+    mdn:
+        image: xdb6:latest
+        container_name: mdn
+        hostname: mdn
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+        depends_on:
+          - pub1
+        entrypoint:
+          - "/docker/mdn_entrypoint.sh"
+
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24

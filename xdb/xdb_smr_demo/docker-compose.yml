@@ -1,0 +1,43 @@
+---
+version: '3'
+services:
+    pub:
+        image: xdb6:latest
+        container_name: pub
+        hostname: pub
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+        depends_on:
+          - sub
+        entrypoint:
+          - "/docker/pub_entrypoint.sh"
+
+    sub:
+        image: centos6/epas10:latest
+        container_name: sub
+        hostname: sub
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.12
+
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24
