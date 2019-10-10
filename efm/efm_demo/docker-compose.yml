@@ -3,6 +3,11 @@ version: '3'
 services:
     primary:
         image: efm:latest
+        build:
+          context: ../3.3
+          args:
+            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMPASSWORD: ${YUMPASSWORD}
         container_name: primary
         hostname: primary
         privileged: true

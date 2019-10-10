@@ -1,4 +1,4 @@
-FROM epas10:latest
+FROM centos6/epas10:latest
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME

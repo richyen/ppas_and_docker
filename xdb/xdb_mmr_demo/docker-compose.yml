@@ -20,6 +20,11 @@ services:
 
     mdn:
         image: xdb6:latest
+        build:
+          context: ../6.2
+          args:
+            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMPASSWORD: ${YUMPASSWORD}
         container_name: mdn
         hostname: mdn
         privileged: true

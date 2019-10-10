@@ -3,6 +3,11 @@ version: '3'
 services:
     pub:
         image: xdb6:latest
+        build:
+          context: ../6.2
+          args:
+            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMPASSWORD: ${YUMPASSWORD}
         container_name: pub
         hostname: pub
         privileged: true
