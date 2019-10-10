@@ -16,7 +16,7 @@ services:
             public:
                 ipv4_address: 10.111.220.12
         entrypoint:
-          - "/docker/pub1_entrypoint.sh"
+          - "/docker/entrypoint.sh"
 
     mdn:
         image: xdb6:latest
@@ -35,7 +35,7 @@ services:
         depends_on:
           - pub1
         entrypoint:
-          - "/docker/mdn_entrypoint.sh"
+          - "/docker/entrypoint.sh"
 
 networks:
     public:
