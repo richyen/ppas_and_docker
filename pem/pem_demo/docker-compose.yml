@@ -16,8 +16,7 @@ services:
           - "5432"
           - "8443:8443"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.11
@@ -36,8 +35,7 @@ services:
         privileged: true
         tty: true
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.12
@@ -53,8 +51,7 @@ services:
         privileged: true
         tty: true
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.13

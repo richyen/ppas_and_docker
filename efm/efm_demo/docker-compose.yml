@@ -15,8 +15,7 @@ services:
         ports:
           - "5432"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.11
@@ -32,8 +31,7 @@ services:
         ports:
           - "5432"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.12
@@ -51,8 +49,7 @@ services:
         ports:
           - "5432"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.13
@@ -70,8 +67,7 @@ services:
         ports:
           - "5432"
         volumes:
-          - "/sys/fs/cgroup:/sys/fs/cgroup"
-          - "./:/docker"
+          - ".:/docker"
         networks:
             public:
                 ipv4_address: 10.111.220.14
