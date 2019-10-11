@@ -31,6 +31,7 @@ services:
           args:
             YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
+            PGMAJOR: 10
         container_name: mdn
         hostname: mdn
         privileged: true
