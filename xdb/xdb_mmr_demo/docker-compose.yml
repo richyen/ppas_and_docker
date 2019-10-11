@@ -3,6 +3,11 @@ version: '3'
 services:
     pub1:
         image: centos6/epas10:latest
+        build:
+          context: ../../epas/10
+          args:
+            YUMUSERNAME: ${YUMUSERNAME}
+            YUMPASSWORD: ${YUMPASSWORD}
         container_name: pub1
         hostname: pub1
         privileged: true
@@ -23,7 +28,7 @@ services:
         build:
           context: ../6.2
           args:
-            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
         container_name: mdn
         hostname: mdn

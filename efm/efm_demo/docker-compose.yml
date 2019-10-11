@@ -6,7 +6,7 @@ services:
         build:
           context: ../3.3
           args:
-            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
         container_name: primary
         hostname: primary

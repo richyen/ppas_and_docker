@@ -6,7 +6,7 @@ services:
         build:
           context: ../6.2
           args:
-            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
         container_name: pub
         hostname: pub
@@ -27,6 +27,11 @@ services:
 
     sub:
         image: centos6/epas10:latest
+        build:
+          context: ../../epas/10
+          args:
+            YUMUSERNAME: ${YUMUSERNAME}
+            YUMPASSWORD: ${YUMPASSWORD}
         container_name: sub
         hostname: sub
         privileged: true
