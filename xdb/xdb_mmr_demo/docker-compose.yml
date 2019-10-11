@@ -4,10 +4,12 @@ services:
     pub1:
         image: centos6/epas10:latest
         build:
-          context: ../../epas/10
+          context: ../../epas
+          dockerfile: Dockerfile.centos6
           args:
             YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
+            PGMAJOR: 10
         container_name: pub1
         hostname: pub1
         privileged: true

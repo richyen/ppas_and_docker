@@ -27,10 +27,12 @@ services:
     sub:
         image: centos6/epas10:latest
         build:
-          context: ../../epas/10
+          context: ../../epas
+          dockerfile: Dockerfile.centos6
           args:
             YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
+            PGMAJOR: 10
         container_name: sub
         hostname: sub
         privileged: true
