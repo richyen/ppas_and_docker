@@ -1,13 +1,13 @@
 GRANT CREATE ANY TRIGGER TO system;
 GRANT RESOURCE TO system;
 
-create table test_data 
-( 
- id number NOT NULL PRIMARY KEY, 
+create table test_data
+(
+ id number NOT NULL PRIMARY KEY,
  logo blob,
- first_name varchar2(16), 
- last_name varchar2(24), 
- amount number(6,2), 
+ first_name varchar2(16),
+ last_name varchar2(24),
+ amount number(6,2),
  modify_date date
  );
 
@@ -20,9 +20,9 @@ create table test_data
 -- DBMS_LOB.APPEND(c, B);
 -- RETURN c;
 -- END;
--- 
+--
 -- exec dbms_random.seed(42);
--- 
+--
 -- declare
 -- v_clob        clob;
 -- v_blob        blob;
@@ -44,12 +44,12 @@ create table test_data
 --     dbms_lob.default_csid,
 --     v_ctx,
 --     v_warn);
--- 
+--
 -- insert into test_data (id, logo, first_name, last_name, amount, modify_date)
 --   select rownum+10000, v_blob,
---   initcap(dbms_random.string('l',dbms_random.value(2,16))), 
---   initcap(dbms_random.string('l',dbms_random.value(2,24))), 
---   round(dbms_random.value(1,1000),2), 
+--   initcap(dbms_random.string('l',dbms_random.value(2,16))),
+--   initcap(dbms_random.string('l',dbms_random.value(2,24))),
+--   round(dbms_random.value(1,1000),2),
 --   to_date('01-JAN-2008', 'DD-MON-YYYY') + dbms_random.value(-100,100)
 --   from dual
 --   connect by level <=10;

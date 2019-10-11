@@ -1,0 +1,49 @@
+---
+version: '3'
+services:
+    oracle:
+        image: wnameless/oracle-xe-11g-r2
+        container_name: oracle
+        hostname: oracle
+        privileged: true
+        tty: true
+        ports:
+          - "1521"
+          - "8080"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.12
+
+    epas:
+        image: xdb6:latest
+        build:
+          context: ../6.2
+          args:
+            YUMUSERNAME: richard.yen_enterprisedb.com
+            YUMPASSWORD: ${YUMPASSWORD}
+        container_name: epas
+        hostname: epas
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - "/sys/fs/cgroup:/sys/fs/cgroup"
+          - "./:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+        depends_on:
+          - oracle
+        entrypoint:
+          - "/docker/entrypoint.sh"
+
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24
