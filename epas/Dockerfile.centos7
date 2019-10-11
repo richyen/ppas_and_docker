@@ -1,11 +1,11 @@
-FROM centos:6.6
+FROM gisjedi/gosu-centos
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
+ARG PGMAJOR
 
-ENV REPONAME=ppas91
-ENV PGMAJOR=9.1
+ENV REPONAME=edbas${PGMAJOR}
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
@@ -27,7 +27,7 @@ RUN adduser --home-dir /home/postgres --create-home postgres
 RUN echo 'postgres   ALL=(ALL)   NOPASSWD: ALL' >> /etc/sudoers
 RUN echo 'postgres:postgres'|chpasswd
 
-RUN service ppas-${PGMAJOR} initdb
+RUN gosu enterprisedb initdb -D ${PGDATA}
 
 RUN sed -i "s/^PGPORT.*/PGPORT=${PGPORT}/" /etc/sysconfig/ppas/ppas-${PGMAJOR}
 
@@ -42,11 +42,11 @@ RUN echo "host   replication repuser  0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf
 RUN echo "host   all         all      0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf
 
 RUN sed -i "s/^port = .*/port = ${PGPORT}/"         ${PGDATA}/postgresql.conf
-RUN sed -i "s/^logging_collector = off/logging_collector = on/" ${PGDATA}/postgresql.conf                                                                                  
+RUN sed -i "s/^logging_collector = off/logging_collector = on/" ${PGDATA}/postgresql.conf
 RUN sed -i "s/^#wal_level.*/wal_level=hot_standby/" ${PGDATA}/postgresql.conf
 RUN sed -i "s/^#wal_keep_segments = 0/wal_keep_segments = 500/" ${PGDATA}/postgresql.conf
 RUN sed -i "s/^#max_wal_senders = 0/max_wal_senders = 5/" ${PGDATA}/postgresql.conf
 
 EXPOSE ${PGPORT}
 
-CMD service ppas-${PGMAJOR} start && tail -F ${PGLOG}
+CMD pg_ctl -D ${PGDATA} start && tail -F ${PGLOG}

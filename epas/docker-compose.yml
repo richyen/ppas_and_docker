@@ -1,0 +1,29 @@
+---
+version: '3'
+services:
+    edbas:
+        image: centos6/epas11:latest
+        build:
+          context: .
+          dockerfile: Dockerfile.centos6
+          args:
+            YUMUSERNAME: ${YUMUSERNAME}
+            YUMPASSWORD: ${YUMPASSWORD}
+            PGMAJOR: 11
+        container_name: edbas
+        hostname: edbas
+        privileged: true
+        tty: true
+        ports:
+          - "5432"
+        volumes:
+          - ".:/docker"
+        networks:
+            public:
+                ipv4_address: 10.111.220.11
+networks:
+    public:
+        driver: "bridge"
+        ipam:
+            config:
+                - subnet: 10.111.220.1/24
