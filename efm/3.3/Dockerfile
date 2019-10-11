@@ -1,10 +1,10 @@
-FROM epas10:latest
+FROM centos6/epas11:latest
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
 ARG YUMPASSWORD
 
-ENV PGMAJOR=10
+ENV PGMAJOR=11
 ENV SERVICE_NAME=edb-as-${PGMAJOR}
 ENV EFM_VER=3.3
 ENV INSTALLDIR=/usr/edb/efm-${EFM_VER}
