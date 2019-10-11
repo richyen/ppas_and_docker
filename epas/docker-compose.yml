@@ -11,6 +11,8 @@ services:
             YUMPASSWORD: ${YUMPASSWORD}
             PGMAJOR: 11
         container_name: edbas
+        environment:
+            PGMAJOR: 11
         hostname: edbas
         privileged: true
         tty: true
@@ -20,10 +22,10 @@ services:
           - ".:/docker"
         networks:
             public:
-                ipv4_address: 10.111.220.11
+                ipv4_address: 10.111.222.11
 networks:
     public:
         driver: "bridge"
         ipam:
             config:
-                - subnet: 10.111.220.1/24
+                - subnet: 10.111.222.1/24
