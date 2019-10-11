@@ -13,7 +13,7 @@ service edb-as-${PGMAJOR} restart
 if [[ `hostname` == 'mdn' ]]
 then
   printf "\e[0;33m>>> SETTING UP MASTER DATABASE\n\e[0m"
-  sed -i "s/^export OTHER_MASTER_IPS.*/export OTHER_MASTER_IPS='10.111.220.12'/" /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
+  sed -i "s/^export OTHER_MASTER_IPS.*/export OTHER_MASTER_IPS='pub1'/" /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
 
   printf "\e[0;33m>>> SETTING UP REPLICATION\n\e[0m"
   /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
