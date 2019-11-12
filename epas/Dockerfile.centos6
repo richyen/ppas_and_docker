@@ -5,7 +5,6 @@ ARG YUMUSERNAME
 ARG YUMPASSWORD
 ARG PGMAJOR
 
-ENV REPONAME=edbas${PGMAJOR}
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
@@ -18,7 +17,7 @@ RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.rep
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGMAJOR}-server.x86_64 sudo
+RUN yum -y install edb-as${PGMAJOR}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
 

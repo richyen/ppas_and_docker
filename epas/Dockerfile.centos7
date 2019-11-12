@@ -18,7 +18,7 @@ RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.rep
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install ${REPONAME}-server.x86_64 sudo
+RUN yum -y install ${REPONAME}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
 
