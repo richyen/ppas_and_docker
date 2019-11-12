@@ -33,7 +33,7 @@
 ######################################################################################
 # quit on any error
 # verify any  undefined shell variables
-set -u
+#set -u
 
 ######################################################################################
 # function: print messages with process id

@@ -4,7 +4,6 @@ MAINTAINER richard.yen@enterprisedb.com
 ARG YUMUSERNAME
 ARG YUMPASSWORD 
 
-ENV REPONAME=edbas96
 ENV PGMAJOR=9.6
 ENV PGNODOT=96
 ENV PGPORT=5432
@@ -19,7 +18,7 @@ RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.rep
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install edb-as${PGNODOT}-server.x86_64 sudo vim file net-tools
+RUN yum -y install edb-as${PGNODOT}-server.x86_64 sudo vim file net-tools
 
 RUN echo 'root:root'|chpasswd
 

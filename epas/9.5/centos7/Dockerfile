@@ -4,7 +4,7 @@ MAINTAINER richard.yen@enterprisedb.com
 ARG YUMUSERNAME
 ARG YUMPASSWORD 
 
-ENV REPONAME=ppas95
+ENV VERNAME=ppas95
 ENV PGMAJOR=9.5
 ENV PGPORT=5432
 ENV PGDATABASE=edb
@@ -18,7 +18,7 @@ RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.rep
 
 RUN yum -y update
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install ${REPONAME}-server.x86_64 sudo
+RUN yum -y install ${VERNAME}-server.x86_64 sudo
 
 RUN echo 'root:root'|chpasswd
 
