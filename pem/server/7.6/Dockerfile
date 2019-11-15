@@ -1,13 +1,13 @@
-FROM epas10:latest
+FROM centos6/epas10:latest
 MAINTAINER richard.yen@enterprisedb.com
 
 # This Dockerfile assumes the PG/EPAS version in the base image was installed using EDB Yum repo
 
 # create placeholder dirs
-RUN yum -y --enablerepo=edbas10 update edb-as10-server-sslutils
+RUN yum -y update edb-as10-server-sslutils
 RUN yum -y install epel-release centos-release-scl
 RUN yum -y install rh-python36
-RUN yum -y --enablerepo=edbas10 --enablerepo=enterprisedb-dependencies --enablerepo=enterprisedb-tools install edb-pem-server
+RUN yum -y install edb-pem-server
 
 # This may be needed on some systems
 # RUN echo "export PATH=/opt/rh/rh-python36/root/usr/bin:\${PATH}" >> /etc/profile
