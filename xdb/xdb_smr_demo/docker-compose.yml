@@ -8,6 +8,7 @@ services:
           args:
             YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
+            PGMAJOR: 10
         container_name: pub
         hostname: pub
         privileged: true

@@ -15,7 +15,7 @@ ENV PGDATA=/var/lib/edb/as${PGMAJOR}
 # RUN rpm -ivh http://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm
 # RUN sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo
 RUN yum -y install yum-plugin-ovl
-RUN yum -y --enablerepo=enterprisedb-tools --enablerepo=enterprisedb-dependencies --enablerepo=${REPONAME} install ppas-xdb which java-${JAVA_VERSION}.0-openjdk-devel
+RUN yum -y install ppas-xdb which java-${JAVA_VERSION}.0-openjdk-devel
 
 # tweak conf files so logical replication can happen
 RUN sed -i "s/^wal_level.*/wal_level = logical/" ${PGDATA}/data/postgresql.conf
