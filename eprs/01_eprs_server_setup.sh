@@ -21,7 +21,7 @@ then
   ${EPRS_HOME}/server/bin/runServer.sh --host ${hostip} --config ${EPRS_HOME}/server/etc &
 else
   systemctl start edb-as-${PGVERSION}
-  sed -i "s/ngen.server.host=localhost/ngen.server.host=${hostip}/" ${EPRS_HOME}/server/etc/application.properties
+  sed -i "s/#ngen.server.host=localhost/ngen.server.host=${hostip}/" ${EPRS_HOME}/server/etc/application.properties
   systemctl start edb-rs-server
 fi
 psql -c "alter user enterprisedb identified by adminedb"
