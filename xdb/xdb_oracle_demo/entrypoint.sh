@@ -7,8 +7,8 @@ ENCRYPTED_ORA_PASS="deIuKoLKPi4=" # Plaintext password is "oracle"
 if [[ `hostname` == 'oracle' ]]
 then
   /usr/sbin/startup.sh
-  sqlplus -S sys/oracle@//localhost:1521/XE < /docker/oracle_files/load_oracle_test_data.sql
-  echo "update test_data set first_name = 'my_name_changed' where id = 10000;" | sqlplus -S sys/oracle@//localhost:1521/XE
+  sqlplus -S system/oracle@//localhost:1521/XE < /docker/oracle_files/load_oracle_test_data.sql
+  echo "update test_data set first_name = 'my_name_changed' where id = 10000;" | sqlplus -S system/oracle@//localhost:1521/XE
 else
   cp /docker/oracle_files/ojdbc6.jar ${XDB_PATH}/lib/jdbc/ojdbc6.jar
   rm -f /var/run/edb-xdbpubserver/edb-xdbpubserver.pid
