@@ -42,8 +42,9 @@ RUN sed -i "s/bind\.address=.*/bind.address=127.0.0.1:5430/"         /etc/edb/ef
 RUN sed -i "s/admin\.port=.*/admin.port=5431/"                       /etc/edb/efm-${EFM_VER}/efm.properties
 RUN sed -i "s/is\.witness=.*/is.witness=false/"                      /etc/edb/efm-${EFM_VER}/efm.properties
 RUN sed -i "s/auto\.allow\.hosts=.*/auto.allow.hosts=true/"          /etc/edb/efm-${EFM_VER}/efm.properties
+RUN sed -i "s/db\.data\.dir=/db.data.dir=\/var\/lib\/edb\/as${PGMAJOR}\/data/"                     /etc/edb/efm-${EFM_VER}/efm.properties
 RUN sed -i "s/db\.password\.encrypted=/db.password.encrypted=4bcdcec94b6e66deec70559f904f7e52/"    /etc/edb/efm-${EFM_VER}/efm.properties
-RUN sed -i "s/db\.recovery\.conf\.dir=/db.recovery.conf.dir=\/var\/lib\/edb\/as${PGMAJOR}\/data/g" /etc/edb/efm-${EFM_VER}/efm.properties
+#RUN sed -i "s/db\.recovery\.conf\.dir=/db.recovery.conf.dir=\/var\/lib\/edb\/as${PGMAJOR}\/data/g" /etc/edb/efm-${EFM_VER}/efm.properties
 
 RUN cp /etc/edb/efm-${EFM_VER}/efm.nodes.in /etc/edb/efm-${EFM_VER}/efm.nodes
 RUN chmod 766 /etc/edb/efm-${EFM_VER}/efm.nodes

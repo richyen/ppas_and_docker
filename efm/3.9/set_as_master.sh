@@ -10,4 +10,4 @@ service ${SERVICE_NAME} start
 psql edb enterprisedb -c "create user repuser replication"
 
 sed -i "s/bind.address.*/bind.address=`hostname -i`:5430/" /etc/edb/efm-${EFM_VER}/efm.properties
-service efm-${EFM_VER} start
+service edb-efm-${EFM_VER} start

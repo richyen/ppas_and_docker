@@ -1,6 +1,6 @@
 #!/bin/bash
 
-VER='3.3'
+VER='3.9'
 INSTALLDIR="/usr/edb/efm-${VER}"
 
 if [[ `hostname` == 'primary' ]]

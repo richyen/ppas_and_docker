@@ -32,7 +32,13 @@ mkdir -p ${DATADIR}
 pg_basebackup -U repuser -h ${MASTER_HOST} -D ${DATADIR} -PR --wal-method=fetch
 
 # Fix up confs so that this machine is a valid EFM standby
-echo "trigger_file='/tmp/efm_standby_trigger'" >> ${DATADIR}/recovery.conf
+if [[ ${PGMAJOR} -ge 12 ]]
+then
+  sed -i "s/#promote_trigger_file.*/promote_trigger_file = '\/tmp\/efm_standby_trigger'/" ${DATADIR}/postgresql.conf
+else
+  echo "trigger_file = '/tmp/efm_standby_trigger'" >> ${DATADIR}/recovery.conf
+fi
+
 if [[ `grep -c "^hot_standby" ${DATADIR}/postgresql.conf` -gt 0 ]]
 then
     sed -i "s/^hot_standby.*/hot_standby = on/" ${DATADIR}/postgresql.conf
@@ -50,4 +56,4 @@ service ${SERVICE_NAME} start
 # Configure and start EFM
 echo "${MASTER_HOST}:5430" >> /etc/edb/efm-${EFM_VER}/efm.nodes
 sed -i "s/bind.address.*/bind.address=`hostname -i`:5430/" /etc/edb/efm-${EFM_VER}/efm.properties
-service efm-${EFM_VER} start
+service edb-efm-${EFM_VER} start
