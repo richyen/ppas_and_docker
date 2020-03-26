@@ -4,7 +4,7 @@ services:
     primary:
         image: efm:latest
         build:
-          context: ../3.3
+          context: ../3.9
           args:
             YUMUSERNAME: ${YUMUSERNAME}
             YUMPASSWORD: ${YUMPASSWORD}
