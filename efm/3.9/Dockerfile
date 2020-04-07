@@ -18,7 +18,7 @@ ENV INSTALLDIR=/usr/edb/efm-${EFM_VER}
 # run update and install require packages.
 RUN yum -y install yum-plugin-ovl
 RUN yum -y install epel-release
-RUN yum -y install which edb-efm39 java-1.8.0-openjdk vim
+RUN yum -y install which edb-efm${EFM_VER/./} java-1.8.0-openjdk vim
 
 # copy EFM files into place
 COPY set_as_master.sh  ${INSTALLDIR}/bin/set_as_master.sh
