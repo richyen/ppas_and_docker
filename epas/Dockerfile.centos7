@@ -49,4 +49,4 @@ RUN sed -i "s/^#max_wal_senders = 0/max_wal_senders = 5/" ${PGDATA}/postgresql.c
 
 EXPOSE ${PGPORT}
 
-CMD pg_ctl -D ${PGDATA} start && tail -F ${PGLOG}
+CMD su enterprisedb -c "pg_ctl -D ${PGDATA} start" && tail -F ${PGLOG}
