@@ -2,8 +2,6 @@ FROM centos:6.6
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG INSTALLER_FILENAME
-ARG EDBUSERNAME
-ARG EDBPASSWORD
 
 ENV PGMAJOR=%%PGMAJOR%%
 ENV PGPORT=5432
@@ -22,7 +20,7 @@ RUN chmod 755 /tmp/${INSTALLER_FILENAME}
 
 # For legacy installers, use the commented one below
 # RUN /tmp/${INSTALLER_FILENAME} --mode unattended --prefix /usr/edb/as${PGMAJOR} --datadir ${PGDATA}
-RUN /tmp/${INSTALLER_FILENAME} --mode unattended --webusername "${EDBUSERNAME}" --webpassword "${EDBPASSWORD}" --prefix /usr/edb/as${PGMAJOR} --datadir ${PGDATA}
+RUN /tmp/${INSTALLER_FILENAME} --mode unattended --prefix /usr/edb/as${PGMAJOR} --datadir ${PGDATA}
 
 RUN echo 'root:root'|chpasswd
 
