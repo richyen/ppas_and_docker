@@ -19,7 +19,7 @@ then
     # Switch to trigger-based replication
     sed -i "s/changesetlogmode W/changesetlogmode T/" /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
   fi
-  sed -i "s/^export OTHER_MASTER_IPS.*/export OTHER_MASTER_IPS='pub1'/" /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
+  sed -i "s/^export OTHER_MASTER_IPS.*/export OTHER_MASTER_IPS='${host_list/mdn /}'/" /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
 
   printf "\e[0;33m>>> SETTING UP REPLICATION\n\e[0m"
   /usr/ppas-xdb-${XDB_VERSION}/bin/build_xdb_mmr_publication.sh
