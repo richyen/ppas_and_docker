@@ -1,4 +1,4 @@
-FROM epas10:latest
+FROM centos6/epas10:latest
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
@@ -16,8 +16,9 @@ RUN yum -y upgrade edb-repo
 
 # run update and install require packages.
 RUN yum -y install yum-plugin-ovl
+RUN yum -y install epel-release
 RUN yum -y update
-RUN yum -y --enablerepo=enterprisedb-tools install which edb-efm31 java-1.8.0-openjdk vim
+RUN yum -y install which edb-efm${EFM_VER/./} java-1.8.0-openjdk vim
 
 # copy EFM files into place
 COPY set_as_master.sh  ${INSTALLDIR}/bin/set_as_master.sh
