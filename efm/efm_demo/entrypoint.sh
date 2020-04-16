@@ -2,11 +2,12 @@
 
 VER='3.9'
 INSTALLDIR="/usr/edb/efm-${VER}"
+standby_ip_list="12 13"
 
 if [[ `hostname` == 'primary' ]]
 then
   ${INSTALLDIR}/bin/set_as_master.sh
-  for i in 12 13
+  for i in ${standby_ip_list}
   do
     ${INSTALLDIR}/bin/efm allow-node efm 10.111.220.${i}
   done
@@ -14,7 +15,7 @@ then
 elif [[ `hostname` == 'witness' ]]
 then
   echo 'primary:5430 ' >> /etc/edb/efm-${VER}/efm.nodes
-  for i in 12 13
+  for i in ${standby_ip_list}
   do
     echo "10.111.220.${i}:5430 " >> /etc/edb/efm-${VER}/efm.nodes
   done
