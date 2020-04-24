@@ -3,6 +3,7 @@
 if [[ "${1}x" == 'x' ]]
 then
   echo "No repository URL provided. Please provide a repository URL as argument"
+  echo "Usage: ${0} <repository_url:port>"
   exit 1
 fi
 
@@ -17,8 +18,7 @@ do
   docker build --build-arg YUMUSERNAME=${YUMUSERNAME} --build-arg YUMPASSWORD=${YUMPASSWORD} --build-arg PGMAJOR=${i} -t ${V7}:latest -f Dockerfile.centos7 .
 
   # Set tags
-  VF=`docker run -it --rm ${R}/centos7/epas${V}:latest psql --version`
-  VN=`echo -n ${VF} | awk '{ print \$3 }' | sed "s/\r$//"`
+  VN=`docker run -it --rm ${R}/centos7/epas${V}:latest psql --version | awk '{ print \$3 }' | tr -d '\r'`
   docker tag ${V6}:latest ${V6}:${VN}
   docker tag ${V7}:latest ${V7}:${VN}
 
