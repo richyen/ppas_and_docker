@@ -1,22 +1,30 @@
 #!/bin/bash
 
-for i in 9.5 9.6 10 11
+if [[ "${1}x" == 'x' ]]
+then
+  echo "No repository URL provided. Please provide a repository URL as argument"
+  exit 1
+fi
+
+for i in 9.5 9.6 10 11 12
 do
   # Build new images
-  R="docker-reg.ma.us.enterprisedb.com:5000"
-  V=`echo $i | sed "s/\.//"`
-  docker build --no-cache --build-arg YUMUSERNAME=${YUMUSERNAME} --build-arg YUMPASSWORD=${YUMPASSWORD} -t ${R}/centos6/epas${V}:latest ${i}/. &
-  docker build --no-cache --build-arg YUMUSERNAME=${YUMUSERNAME} --build-arg YUMPASSWORD=${YUMPASSWORD} -t ${R}/centos7/epas${V}:latest ${i}/centos7/.
+  R=${1}
+  V=${i/./}
+  V6=${R}/centos6/epas${V}
+  V7=${R}/centos7/epas${V}
+  docker build --build-arg YUMUSERNAME=${YUMUSERNAME} --build-arg YUMPASSWORD=${YUMPASSWORD} --build-arg PGMAJOR=${i} -t ${V6}:latest -f Dockerfile.centos6 . &
+  docker build --build-arg YUMUSERNAME=${YUMUSERNAME} --build-arg YUMPASSWORD=${YUMPASSWORD} --build-arg PGMAJOR=${i} -t ${V7}:latest -f Dockerfile.centos7 .
 
   # Set tags
   VF=`docker run -it --rm ${R}/centos7/epas${V}:latest psql --version`
   VN=`echo -n ${VF} | awk '{ print \$3 }' | sed "s/\r$//"`
-  docker tag ${R}/centos6/epas${V}:latest ${R}/centos6/epas${V}:${VN}
-  docker tag ${R}/centos7/epas${V}:latest ${R}/centos7/epas${V}:${VN}
+  docker tag ${V6}:latest ${V6}:${VN}
+  docker tag ${V7}:latest ${V7}:${VN}
 
   # Push images to registry
-  docker push ${R}/centos6/epas${V}:latest
-  docker push ${R}/centos6/epas${V}:${VN} &
-  docker push ${R}/centos7/epas${V}:latest
-  docker push ${R}/centos7/epas${V}:${VN} &
+  docker push ${V6}:latest
+  docker push ${V6}:${VN} &
+  docker push ${V7}:latest
+  docker push ${V7}:${VN} &
 done
