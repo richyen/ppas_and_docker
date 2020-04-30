@@ -25,7 +25,7 @@ services:
           - "/docker/entrypoint.sh"
 
     mdn:
-        image: xdb6:latest
+        image: xdb:latest
         build:
           context: ../6.2
           args:
@@ -40,9 +40,12 @@ services:
           - "5432"
         volumes:
           - ".:/docker"
+          - "/tmp/.X11-unix:/tmp/.X11-unix"
         networks:
             public:
                 ipv4_address: 10.111.220.11
+        environment:
+          - "DISPLAY=host.docker.internal:0"
         depends_on:
           - pub1
         entrypoint:
