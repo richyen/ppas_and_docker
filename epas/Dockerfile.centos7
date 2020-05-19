@@ -39,4 +39,4 @@ RUN sed -e "s/^port = .*/port = ${PGPORT}/" \
 
 EXPOSE ${PGPORT}
 
-CMD su enterprisedb -c "pg_ctl -D ${PGDATA} start" && tail -F ${PGLOG}
+CMD su - enterprisedb -c "pg_ctl -D ${PGDATA} start" && tail -F ${PGLOG}
