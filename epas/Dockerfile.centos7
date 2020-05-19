@@ -29,8 +29,6 @@ RUN echo 'postgres:postgres'|chpasswd
 
 RUN gosu enterprisedb initdb -D ${PGDATA}
 
-# RUN sed -i "s/^PGPORT.*/PGPORT=${PGPORT}/" /etc/sysconfig/edb/as${PGMAJOR}
-
 RUN echo "export PGPORT=${PGPORT}"         >> /etc/profile.d/pg_env.sh
 RUN echo "export PGDATABASE=${PGDATABASE}" >> /etc/profile.d/pg_env.sh
 RUN echo "export PGUSER=${PGUSER}"         >> /etc/profile.d/pg_env.sh
