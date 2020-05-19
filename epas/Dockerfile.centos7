@@ -5,7 +5,6 @@ ARG YUMUSERNAME
 ARG YUMPASSWORD
 ARG PGMAJOR
 
-ENV REPONAME=edb-as${PGMAJOR}
 ENV PGPORT=5432
 ENV PGDATABASE=edb
 ENV PGUSER=enterprisedb
@@ -17,7 +16,7 @@ RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm \
  && sed -i "s/<username>:<password>/${YUMUSERNAME}:${YUMPASSWORD}/" /etc/yum.repos.d/edb.repo \
  && yum -y update \
  && yum -y install yum-plugin-ovl epel-release \
- && yum -y install ${REPONAME}-server.x86_64 sudo
+ && yum -y install edb-as${PGMAJOR/./}-server.x86_64 sudo
 
 RUN su - enterprisedb -c "/usr/edb/as${PGMAJOR}/bin/initdb -D ${PGDATA}"
 
