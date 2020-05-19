@@ -1,4 +1,4 @@
-FROM gosu/centos:7.5
+FROM centos:7
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
@@ -19,14 +19,7 @@ RUN rpm -ivh https://yum.enterprisedb.com/edbrepos/edb-repo-latest.noarch.rpm \
  && yum -y install yum-plugin-ovl epel-release \
  && yum -y install ${REPONAME}-server.x86_64 sudo
 
-RUN echo 'root:root'|chpasswd
-
-# setting postgres user for login
-RUN adduser --home-dir /home/postgres --create-home postgres \
- && echo 'postgres   ALL=(ALL)   NOPASSWD: ALL' >> /etc/sudoers \
- && echo 'postgres:postgres'|chpasswd
-
-RUN gosu enterprisedb initdb -D ${PGDATA}
+RUN su - enterprisedb -c "/usr/edb/as${PGMAJOR}/bin/initdb -D ${PGDATA}"
 
 RUN echo "export PGPORT=${PGPORT}"         >> /etc/profile.d/pg_env.sh \
  && echo "export PGDATABASE=${PGDATABASE}" >> /etc/profile.d/pg_env.sh \
@@ -38,11 +31,11 @@ RUN echo "local  all         all                 trust" >  ${PGDATA}/pg_hba.conf
  && echo "host   replication repuser  0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf \
  && echo "host   all         all      0.0.0.0/0  trust" >> ${PGDATA}/pg_hba.conf
 
-RUN sed -ie "s/^port = .*/port = ${PGPORT}/" \
+RUN sed -e "s/^port = .*/port = ${PGPORT}/" \
         -e "s/^logging_collector = off/logging_collector = on/" \
         -e "s/^#wal_level.*/wal_level=hot_standby/" \
         -e "s/^#wal_keep_segments = 0/wal_keep_segments = 500/" \
-        -e "s/^#max_wal_senders = 0/max_wal_senders = 5/" \
+        -e "s/^#max_wal_senders = 0/max_wal_senders = 5/" -i ${PGDATA}/postgresql.conf
 
 EXPOSE ${PGPORT}
 
