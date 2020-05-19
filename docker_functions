@@ -15,7 +15,7 @@
 #    * Neither the name of PostgreSQL nor the names of its contributors
 #      may be used to endorse or promote products derived from this
 #      software without specific prior written permission.
-#  THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS
 # "AS IS" AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT
 # LIMITED TO, THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS
 # FOR A PARTICULAR PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE
@@ -31,16 +31,13 @@
 #  Author: Vibhor Kumar
 #  E-mail ID: vibhor.aim@gmail.com
 ######################################################################################
-# quit on any error
-# verify any  undefined shell variables
-#set -u
 
 ######################################################################################
 # function: print messages with process id
 ######################################################################################
 function plog()
 {
-   echo "PID: $$ [RUNTIME: $(date +'%m-%d-%y %H:%M:%S')]: $*"  >&2
+  echo "PID: $$ [RUNTIME: $(date +'%m-%d-%y %H:%M:%S')]: $*"  >&2
 }
 
 ######################################################################################
@@ -49,18 +46,8 @@ function plog()
 function exit_error()
 {
 
-   plog "ERROR: $*"
-   exit 1
- }
-
-######################################################################################
-# function: print_info
-######################################################################################
-function pinfo()
-{
-   plog ""
-   plog "INFO: $*"
-   plog ""
+  plog "ERROR: $*"
+  exit 1
 }
 
 ######################################################################################
@@ -68,8 +55,8 @@ function pinfo()
 ######################################################################################
 function exit_success()
 {
-   plog "SUCCESS: $*"
-   exit 0
+  plog "SUCCESS: $*"
+  exit 0
 }
 
 ######################################################################################
@@ -77,29 +64,28 @@ function exit_success()
 ######################################################################################
 function if_error
 {
-   typeset rc=$1
-   shift
-   typeset msg="$*"
+  typeset rc=$1
+  shift
+  typeset msg="$*"
 
-   if [[ ${rc} -ne 0 ]]
-   then
-       exit_error "$msg; rc=${rc}"
-   else
-       return 0
-   fi
+  if [[ ${rc} -ne 0 ]]
+  then
+    exit_error "$msg; rc=${rc}"
+  else
+    return 0
+  fi
 }
-
 
 ######################################################################################
 # function: get container ip address
 ######################################################################################
 function container_ipaddr ()
 {
-   local C_NAME="$1"
-   local container_ip=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' ${C_NAME} 2>&1)
-   if_error "$?" "${container_ip}"
-   
-   echo "${container_ip}"
+  local C_NAME="$1"
+  local container_ip=$(docker inspect --format='{{.NetworkSettings.IPAddress}}' ${C_NAME} 2>&1)
+  if_error "$?" "${container_ip}"
+
+  echo "${container_ip}"
 }
 
 ######################################################################################
@@ -107,7 +93,7 @@ function container_ipaddr ()
 ######################################################################################
 function list_containers ()
 {
-   docker ps -a
+  docker ps -a
 }
 
 ######################################################################################
@@ -115,11 +101,11 @@ function list_containers ()
 ######################################################################################
 function container_status
 {
-   local C_NAME="$1"
-   local container_status=$( docker inspect --format='{{ (index .State.Running)}}' "${C_NAME}" 2>&1)
-   if_error $? "${container_status}"
-   
-   echo ${container_status}
+  local C_NAME="$1"
+  local container_status=$( docker inspect --format='{{ (index .State.Running)}}' "${C_NAME}" 2>&1)
+  if_error $? "${container_status}"
+
+  echo ${container_status}
 }
 
 ######################################################################################
@@ -127,17 +113,16 @@ function container_status
 ######################################################################################
 function list_images ()
 {
-   docker images
+  docker images
 }
-
 
 ######################################################################################
 # function: pseudo-ssh into a container
 ######################################################################################
 function ssh_to_container ()
 {
-   local C_NAME="$1"
-   docker exec -it ${C_NAME} "/bin/bash"
+  local C_NAME="$1"
+  docker exec -it ${C_NAME} "/bin/bash"
 }
 
 ######################################################################################
@@ -145,9 +130,9 @@ function ssh_to_container ()
 ######################################################################################
 function create_container ()
 {
-   local C_NAME="$1"
-   local I_NAME="$2"
-   
+  local C_NAME="$1"
+  local I_NAME="$2"
+
   messg=$(docker run --privileged=true --publish-all=true --interactive=false --tty=true -v ${HOME}/Code:/docker --hostname=${C_NAME} --detach=true --name=${C_NAME} ${I_NAME}  2>&1)
   echo "$?" "${messg}"
 }
@@ -157,10 +142,10 @@ function create_container ()
 ######################################################################################
 function start_containers ()
 {
-   local C_NAMES="$@"
-   
-   local messg=$(docker start ${C_NAMES} 2>&1)
-   echo "$?" "${messg}"
+  local C_NAMES="$@"
+
+  local messg=$(docker start ${C_NAMES} 2>&1)
+  echo "$?" "${messg}"
 }
 
 ######################################################################################
@@ -168,10 +153,10 @@ function start_containers ()
 ######################################################################################
 function stop_container ()
 {
-   local C_NAMES="$@"
-   
-   local messg=$(docker stop --time=10 ${C_NAMES} 2>&1)
-   echo "$?" "${messg}"
+  local C_NAMES="$@"
+
+  local messg=$(docker stop --time=10 ${C_NAMES} 2>&1)
+  echo "$?" "${messg}"
 }
 
 #######################################################################################
@@ -179,11 +164,10 @@ function stop_container ()
 ######################################################################################
 function remove_broken_containers()
 {
-
-    echo "The following containers will be removed (giving you 10sec to ctrl-C and abort)":
-    docker ps -a | grep Exited | grep -v '(0)'
-		sleep 10
-    docker ps -a | grep Exited | grep -v '(0)' | awk '{ print $1 }' | xargs docker rm
+  echo "The following containers will be removed (giving you 10sec to ctrl-C and abort)":
+  docker ps -a | grep Exited | grep -v '(0)'
+  sleep 10
+  docker ps -a | grep Exited | grep -v '(0)' | awk '{ print $1 }' | xargs docker rm
 
 }
 
@@ -192,8 +176,8 @@ function remove_broken_containers()
 ######################################################################################
 function remove_broken_images()
 {
-    echo "The following images will be removed (giving you 10sec to ctrl-C and abort)":
-    docker images | grep none.*none
-		sleep 10
-    docker images | grep none.*none | awk '{ print $3 }' | xargs docker rmi
+  echo "The following images will be removed (giving you 10sec to ctrl-C and abort)":
+  docker images | grep none.*none
+  sleep 10
+  docker images | grep none.*none | awk '{ print $3 }' | xargs docker rmi
 }
