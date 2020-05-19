@@ -1,4 +1,4 @@
-FROM gisjedi/gosu-centos
+FROM gosu/centos:7.5
 MAINTAINER richard.yen@enterprisedb.com
 
 ARG YUMUSERNAME
