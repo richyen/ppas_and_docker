@@ -160,24 +160,17 @@ function stop_container ()
 }
 
 #######################################################################################
-# remove broken containers
-######################################################################################
-function remove_broken_containers()
+# function: docker_system_cleanup
+#######################################################################################
+function docker_system_cleanup ()
 {
-  echo "The following containers will be removed (giving you 10sec to ctrl-C and abort)":
-  docker ps -a | grep Exited | grep -v '(0)'
-  sleep 10
-  docker ps -a | grep Exited | grep -v '(0)' | awk '{ print $1 }' | xargs docker rm
-
+    docker system prune -f
 }
 
 #######################################################################################
-# remove broken images
-######################################################################################
-function remove_broken_images()
+# function: docker_volume_cleanup
+#######################################################################################
+function docker_volume_cleanup ()
 {
-  echo "The following images will be removed (giving you 10sec to ctrl-C and abort)":
-  docker images | grep none.*none
-  sleep 10
-  docker images | grep none.*none | awk '{ print $3 }' | xargs docker rmi
+    docker volume prune -f
 }
