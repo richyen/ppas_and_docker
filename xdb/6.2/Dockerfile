@@ -22,6 +22,7 @@ RUN echo "host replication enterprisedb 0.0.0.0/0 trust" >> ${PGDATA}/data/pg_hb
 COPY edb-repl.conf /etc/edb-repl.conf
 RUN chown enterprisedb:enterprisedb /etc/edb-repl.conf \
  && chmod 600 /etc/edb-repl.conf
+COPY xdb_repsvrfile.conf ${INSTALLDIR}/etc/xdb_repsvrfile.conf
 COPY xdb_repsvrfile.conf ${INSTALLDIR}/etc/xdb_subsvrfile.conf
 RUN sed -i "s/9051/9052/" ${INSTALLDIR}/etc/xdb_subsvrfile.conf
 
